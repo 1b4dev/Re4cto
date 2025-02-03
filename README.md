@@ -13,6 +13,12 @@ Re4cto features:
  - Uses short polling mechanism to retrieve messages so it can even work shared hosting plans.
  - Includes a Dockerfile to build for SaaS platforms.
 
+ Build demo is available on:
+ https://re4cto.onrender.com
+
+ username:react (or) docker
+ password:react (or) reacton12
+
  ⚠️ **Important Note: This app does not contains backend, so you need to connect or create and connect a backend to use Re4cto.**
 
 ## Getting Started 🚀
