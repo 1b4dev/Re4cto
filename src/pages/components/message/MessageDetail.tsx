@@ -1,15 +1,15 @@
-import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
 import dayjs from '../TimeConfig';
-import EmptyComponent from "../EmptyComponent";
-import MessageGroup from "./MessageComponents";
-import { ActionButton } from "../ActionButton";
-import useApi from "../useApi";
-import usePoll from "../usePoll";
+import EmptyComponent from '../EmptyComponent';
+import MessageGroup from './MessageComponents';
+import { ActionButton } from '../ActionButton';
+import useApi from '../hooks/useApi';
+import usePoll from '../hooks/usePoll';
 
 interface DecodedTokenType {
   user_id: number;
@@ -20,6 +20,7 @@ interface MessageTypes {
   sender_id: number;
   sent_at: string;
   text: string;
+  text_id: string;
   [key: string]: any;
 }
 
@@ -53,11 +54,32 @@ function MessageDetail({ activeMessage, selectedFriend, onNewMessage, isMobileDe
   const [chat, setChat] = useState('');
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const messagesLengthRef = useRef<number>(0);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const abort = new AbortController();
 
   const { fetchData } = useApi();
   const isNewChat = selectedFriend && !activeMessage;
   const token = jwtDecode<DecodedTokenType>(localStorage.getItem('token') as string);
   const id = token.user_id;
+
+  const adjustTextarea = useCallback (() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 200)}px`;
+    }
+  }, []);
+
+  const resetTextarea = useCallback(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      setChat('');
+    }
+  }, []);
+
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setChat(e.target.value);
+    adjustTextarea();
+  }, [adjustTextarea]);
 
   const pollMessage = useCallback (async (signal: AbortSignal) => {
     if (!activeMessage?.message_id) return;      
@@ -141,7 +163,7 @@ function MessageDetail({ activeMessage, selectedFriend, onNewMessage, isMobileDe
           }
           const parsedContent = JSON.parse(data.active_message.content);
           setMessages(parsedContent.messages);
-          setChat('');
+          resetTextarea();
         } else {
           console.error('Error fetching chat messages after reply');
         }
@@ -192,6 +214,8 @@ function MessageDetail({ activeMessage, selectedFriend, onNewMessage, isMobileDe
                 key={groupIndex}
                 group={group}
                 id={id}
+                activeMessageId={activeMessage?.message_id ?? 0}
+                onDeleted={() => pollMessage(abort.signal)}
               />
             ))
           ) : (
@@ -214,24 +238,31 @@ function MessageDetail({ activeMessage, selectedFriend, onNewMessage, isMobileDe
         <Card.Footer className="rounded-bottom-4">
           <Form onSubmit={handleReply} id={String(isNewChat ? selectedFriend?.friend_id : activeMessage?.message_id)} method="post">
             <div className="text-muted d-flex justify-content-start align-items-center my-1">
-              <Form.Control 
-                as="textarea" 
-                maxLength={1000} 
-                rows={1} 
-                className="bg-secondary-subtle me-2" 
-                placeholder="Message…"
-                aria-label="Reply message field"
-                required 
-                value={chat} 
-                onChange={(e:React.ChangeEvent<HTMLTextAreaElement>) => setChat(e.target.value)}
-              />
-              <ActionButton
-                variant="secondary"
-                type="submit"
-                classes="px-3"
-              >
-                Send
-              </ActionButton>
+              <div className="position-relative w-100">
+                <Form.Control 
+                  as="textarea"
+                  ref={textareaRef}
+                  maxLength={1000} 
+                  rows={2} 
+                  className="bg-secondary-subtle rounded-3 pb-3" 
+                  style={{paddingRight: '4rem'}}
+                  placeholder="Message…"
+                  aria-label="Reply message field"
+                  required 
+                  value={chat} 
+                  onChange={handleChange}
+                />
+                <div className="position-absolute end-0 bottom-0 m-2">
+                  <ActionButton
+                    size="sm"
+                    variant="secondary"
+                    type="submit"
+                    classes="px-2"
+                  >
+                    Send
+                  </ActionButton>
+                </div>
+              </div>
             </div>
           </Form>
         </Card.Footer>

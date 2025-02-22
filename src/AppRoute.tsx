@@ -1,4 +1,4 @@
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation } from 'react-router-dom';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -8,7 +8,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const { pathname } = useLocation();
   const token = localStorage.getItem('token');
 
-  return token ? children : (
+  return token || document.cookie ? children : (
     <Navigate 
       to="/login" 
       state={{ 

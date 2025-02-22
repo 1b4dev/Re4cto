@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback, DependencyList } from "react";
+import { useEffect, useRef, useCallback, DependencyList } from 'react';
 
 type CallbackFunction = (signal: AbortSignal) => void | Promise<void>;
 

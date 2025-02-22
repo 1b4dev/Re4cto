@@ -6,7 +6,7 @@ import ConfirmModal from '../ConfirmModal';
 import EmptyComponent from '../EmptyComponent';
 import { ActionButton } from '../ActionButton';
 import { ListPlaceholder } from './FriendComponents';
-import useApi from '../useApi';
+import useApi from '../hooks/useApi';
 
 interface FriendTypes {
   friend_id: number;

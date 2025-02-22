@@ -3,7 +3,7 @@ import Card from 'react-bootstrap/Card';
 import ListGroup from 'react-bootstrap/ListGroup';
 import FriendList from './FriendComponents';
 import { ActionButton } from '../ActionButton';
-import useApi from '../useApi';
+import useApi from '../hooks/useApi';
 
 interface RequestTypes {
   requester_id: number;

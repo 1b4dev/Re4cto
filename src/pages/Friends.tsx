@@ -6,7 +6,7 @@ import FriendsModal from './components/friends/FriendsModal';
 import FriendsAccepted from './components/friends/FriendsAccepted';
 import FriendsPending from './components/friends/FriendsPending';
 import { ActionButton } from './components/ActionButton';
-import useApi from './components/useApi';
+import useApi from './components/hooks/useApi';
 
 interface FriendTypes {
   friend_id: number;

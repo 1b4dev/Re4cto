@@ -8,7 +8,7 @@ import SwipeableListItem from './MessageItemSwipe';
 import ConfirmModal from '../ConfirmModal';
 import EmptyComponent from '../EmptyComponent';
 import { ListPlaceholder } from './MessageComponents';
-import useApi from '../useApi';
+import useApi from '../hooks/useApi';
 
 interface MessageTypes {
   message_id: number;

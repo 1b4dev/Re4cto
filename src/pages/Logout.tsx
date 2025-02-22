@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useApi from './components/useApi';
 import Spinner from 'react-bootstrap/Spinner';
+import useApi from './components/hooks/useApi';
 
 function Logout() {
   const navigate = useNavigate();

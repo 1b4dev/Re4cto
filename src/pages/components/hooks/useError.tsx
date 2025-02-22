@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from 'react';
-import Toast from "react-bootstrap/Toast";
+import Toast from 'react-bootstrap/Toast';
 import ToastContainer from 'react-bootstrap/ToastContainer';
 
 type ErrorContextType = (errorMessage: string) => void;

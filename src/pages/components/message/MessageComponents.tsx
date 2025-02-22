@@ -1,38 +1,52 @@
-import { memo } from "react";
+import { memo } from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
 import Placeholder from 'react-bootstrap/Placeholder';
+import MessageActions from './MessageActions';
 import dayjs from '../TimeConfig';
 
 interface GroupTypes {
   sender_id: number;
   text: string;
   sent_at: string;
+  text_id: string;
 }
 
 interface MessageGroupProps {
   group: GroupTypes[];
   id: number;
+  activeMessageId: number;
+  onDeleted: () => void;
 }
 
-function MessageGroup({ group, id }: MessageGroupProps){
+function MessageGroup({ group, id, activeMessageId, onDeleted }: MessageGroupProps){
   const isSender = group[0].sender_id === id;
+
   return(
     <Row className="mb-3">
       <Col xs={isSender ? {offset: 2} : 10}>
         <div className={`d-flex flex-column ${isSender ? 'align-items-end' : 'align-items-start'}`}>
-          {group.map((message, messageIndex) => (
-            <p key={messageIndex} style={{ whiteSpace: "pre-wrap", wordBreak: "break-word"}} 
-              className={`bg-gradient mw-100 p-3 mb-1 rounded-1 
-                ${isSender
-                  ? 'bg-body-secondary rounded-top-4 rounded-start-4' 
-                  : 'bg-primary text-white rounded-top-4 rounded-end-4'
-                }
-              `}
-            >
-              {message.text}
-            </p>
+          {group.map((message) => (
+            <div key={message.text_id || `fallback-${message.sent_at}`} className={`d-flex align-items-center gap-2 ${isSender && 'flex-row-reverse'}`}>
+              <p style={{ whiteSpace: "pre-wrap", wordBreak: "break-word"}} 
+                className={`bg-gradient mw-100 p-3 mb-1 rounded-1 
+                  ${isSender
+                    ? 'bg-body-secondary rounded-top-4 rounded-start-4' 
+                    : 'bg-primary text-white rounded-top-4 rounded-end-4'
+                  }
+                `}
+              >
+                {message.text}
+              </p>
+              <MessageActions
+                text={message.text}
+                textId={message.text_id}
+                isSender={isSender}
+                messageId={activeMessageId}
+                onDeleted={onDeleted}
+              />
+            </div>
           ))}
           <small className="text-muted">
             {dayjs.utc(group[group.length - 1].sent_at).fromNow()}

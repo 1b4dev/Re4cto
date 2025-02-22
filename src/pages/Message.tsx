@@ -1,14 +1,14 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback } from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
-import Fade from "react-bootstrap/Fade";
-import MessageList from "./components/message/MessageList";
-import MessageDetail from "./components/message/MessageDetail";
-import MessageModal, { SearchUsersTypes } from "./components/message/MessageModal";
-import { ActionButton } from "./components/ActionButton";
-import useApi from './components/useApi';
-import usePoll from "./components/usePoll";
+import Fade from 'react-bootstrap/Fade';
+import MessageList from './components/message/MessageList';
+import MessageDetail from './components/message/MessageDetail';
+import MessageModal, { SearchUsersTypes } from './components/message/MessageModal';
+import { ActionButton } from './components/ActionButton';
+import useApi from './components/hooks/useApi';
+import usePoll from './components/hooks/usePoll';
 
 interface MessageListTypes {
   message_id: number;
@@ -51,7 +51,7 @@ function Message() {
     setActive(null);
     setActiveMessage(null);
     setSelectedFriend(friend);
-    window.innerWidth < 576 && setIsMobileDetail(true);
+    (() => window.innerWidth < 576 && setIsMobileDetail(true))();    
     modalClose();
   };
 
@@ -84,7 +84,7 @@ function Message() {
         if(!readMessage){
           throw new Error('Error set messages as read');
         }
-        window.innerWidth < 576 && setIsMobileDetail(true);
+        (() => window.innerWidth < 576 && setIsMobileDetail(true))();      
       } else {
         throw new Error('Error fetching data');
       }

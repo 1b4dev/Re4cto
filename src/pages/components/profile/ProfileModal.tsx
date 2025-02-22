@@ -1,11 +1,11 @@
 import { useState, useRef, useEffect, useCallback, useMemo, memo } from 'react';
-import useApi from '../useApi';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import FormField from '../FormField';
-import { ActionButton } from '../ActionButton';
 import AlertProvider from '../AlertProvider';
+import { ActionButton } from '../ActionButton';
 import { initialFormDataState, initialAlertState, formFields } from './ProfileComponents';
+import useApi from '../hooks/useApi';
 
 interface AlertTypes {
   show: boolean; 

@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import useApi from './components/useApi';
 import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
 import dayjs from './components/TimeConfig';
 import ProfileCard from './components/profile/ProfileComponents';
 import ProfileModal from './components/profile/ProfileModal';
 import { ActionButton } from './components/ActionButton';
+import useApi from './components/hooks/useApi';
 
 interface UserTypes {
   name: string;

@@ -6,8 +6,8 @@ import FriendList from './FriendComponents';
 import { ActionButton } from '../ActionButton';
 import FormField from '../FormField';
 import EmptyComponent from '../EmptyComponent';
-import useApi from '../useApi';
-import useDebounce from '../useDebounce'
+import useApi from '../hooks/useApi';
+import useDebounce from '../hooks/useDebounce'
 
 interface SearchUsersTypes {
   id: number;

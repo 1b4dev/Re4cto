@@ -8,12 +8,14 @@ import FormField from './components/FormField';
 import AlertProvider from './components/AlertProvider';
 import { ActionButton } from './components/ActionButton';
 import { initialLoginState, initialAlertState, formFields } from './components/LoginComponents';
-import useApi from './components/useApi';
+import useApi from './components/hooks/useApi';
 
 import logo from '/logo.png';
 
 interface LoginDataType {
-  [key: string]: string;
+  username: string;
+  password: string;
+  remember: boolean;
 }
 
 interface AlertState {
@@ -37,7 +39,7 @@ function Login() {
   const version = import.meta.env.VITE_REACT_APP_VERSION;
   const { fetchData, loading } = useApi();
 
-  const [loginData, setLoginData] = useState<LoginDataType>(initialLoginState);
+  const [loginData, setLoginData] = useState<LoginDataType>({...initialLoginState, remember: false});
   const [alert, setAlert] = useState<AlertState>(initialAlertState);
   const [redirect, setRedirect] = useState<string | null>(null);
   const [loginError, setLoginError] = useState<boolean>(false);
@@ -83,23 +85,27 @@ function Login() {
     setAlert(prev => ({ ...prev, show: false }));
   }, []);
 
-  const handleChange = useCallback((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    const { name, type, checked, value } = e.target; 
+    const finalValue = type === 'checkbox' ? checked : value;
+  
     setLoginData(prev => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [name]: finalValue
     }));
+  
     if (loginError) {
-      setLoginError(false)
+      setLoginError(false);
     }
   }, [loginError]);
-    
+
   const handleLogin = useCallback(async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       const data = await fetchData('login', 'POST', loginData, {}, false);
       if (data.token) {
         localStorage.setItem('token', data.token);
-        redirect ? navigate(redirect) : navigate('/');  
+        navigate(redirect ?? '/')
       } else if (data.error) {
         showAlert(data.error);
         setLoginError(true);
@@ -109,7 +115,7 @@ function Login() {
     } catch (error: any) {
       console.error('Error in handleLogin:', error.message); 
     }
-  }, [fetchData, loginData, showAlert, setLoginError, navigate])
+  }, [fetchData, loginData, redirect, showAlert, setLoginError, navigate])
 
   return (
     <Container className="position-absolute top-50 start-50 translate-middle">
@@ -128,11 +134,14 @@ function Login() {
                 isInvalid={loginError}
               />
             ))}
-            <Form.Group className="form-check text-start my-3">
+            <Form.Group className="text-start ms-2 my-3">
               <Form.Check
-                type="checkbox"
-                id="checkDefault"
+                type="switch"
+                id="remember"
+                name="remember"
                 label="Remember me"
+                checked={loginData.remember}
+                onChange={handleChange}
               />
             </Form.Group>  
             <ActionButton

@@ -1,13 +1,13 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route } from 'react-router-dom';
 import { useState } from 'react';
-import Container from "react-bootstrap/Container";
+import Container from 'react-bootstrap/Container';
 
-import Header from "./pages/components/main/Header";
-import Footer from "./pages/components/main/Footer";
-import Message from "./pages/Message";
-import NotFound from "./pages/NotFound";
-import Profile from "./pages/Profile";
-import Friends from "./pages/Friends";
+import Header from './pages/components/main/Header';
+import Footer from './pages/components/main/Footer';
+import Message from './pages/Message';
+import NotFound from './pages/NotFound';
+import Profile from './pages/Profile';
+import Friends from './pages/Friends';
 
 interface UserTypes {
   username: string;

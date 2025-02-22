@@ -1,3 +1,6 @@
 .form-floating > label::after {
   background-color: transparent !important;
 }
+.dropdown-caret::after {
+  display: none !important;
+}

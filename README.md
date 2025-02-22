@@ -64,9 +64,9 @@ Re4cto features:
 To connect your own backend:
 1. Update VITE_API_URL in .env
 2. Modify API endpoints
-3. Adjust authentication method in:
+3. Adjust authentication method in .env
     ``` bash
-    src/page/components/useApi.tsx # Switch between token/cookie auth
+    src/page/components/hooks/useApi.tsx # Switch between token/cookie auth basically supported in API calls. You also need to adjust Login.tsx and other token releated files if you want to use cookie method.
     ``` 
 ### Build & Deployment 🛠️
 
@@ -101,4 +101,4 @@ Contributions are welcome! Please follow these steps:
 
  ## License 📄
 
- [Apache 2.0 Licence] - (https://github.com/1b4dev/Re4cto/blob/main/LICENSE) - See the [LICENSE](https://github.com/1b4dev/Re4cto/blob/main/LICENSE) file for details
+ Apache 2.0 Licence - See the [LICENSE](https://github.com/1b4dev/Re4cto/blob/main/LICENSE) file for details

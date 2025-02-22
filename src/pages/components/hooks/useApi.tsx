@@ -2,6 +2,8 @@ import { useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useError } from './useError';
 
+type AuthType = 'bearer' | 'cookie'
+
 function useApi(initialLoading: boolean = false) {
   const [loading, setLoading] = useState(initialLoading);
   const navigate = useNavigate();
@@ -9,6 +11,7 @@ function useApi(initialLoading: boolean = false) {
   const loadingCount = useRef(0); 
 
   const apiURL = import.meta.env.VITE_API_URL;
+  const authType = (import.meta.env.VITE_AUTH_TYPE || 'bearer') as AuthType;
 
   const fetchData = useCallback(async (endpoint: string, method: string = 'GET', body: any = null, customHeaders: Record<string, string> = {}, requiresAuth: boolean = true, signals: RequestInit = {}): Promise<any> => {
     setLoading(true);
@@ -19,7 +22,8 @@ function useApi(initialLoading: boolean = false) {
       const token = localStorage.getItem('token');
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
-        ...(token && requiresAuth && { Authorization: `Bearer ${token}` }),
+        'Origin': window.origin,
+        ...(token && requiresAuth && authType ==='bearer' && { Authorization: `Bearer ${token}` }),
         ...customHeaders
       };
 
@@ -27,6 +31,7 @@ function useApi(initialLoading: boolean = false) {
         method,
         headers,
         body: body ? JSON.stringify(body) : null,
+        credentials: authType  === 'cookie' ? 'include' : 'omit',
         ...signals, 
       };
 
@@ -56,7 +61,7 @@ function useApi(initialLoading: boolean = false) {
         setLoading(false);
       }
     }
-  }, [navigate, apiURL, handleError]);
+  }, [navigate, apiURL, authType, handleError]);
 
   return { fetchData, loading };
 }

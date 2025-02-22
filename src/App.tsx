@@ -1,9 +1,9 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Login from "./pages/Login";
-import Logout from "./pages/Logout";
-import AppLayout from "./AppLayout";
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import Login from './pages/Login';
+import Logout from './pages/Logout';
+import AppLayout from './AppLayout';
 import { ProtectedRoute } from './AppRoute';
-import { ErrorProvider } from "./pages/components/useError";
+import { ErrorProvider } from './pages/components/hooks/useError';
 import './App.css';
 
 function App() {
