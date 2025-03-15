@@ -16,11 +16,9 @@ interface GroupTypes {
 interface MessageGroupProps {
   group: GroupTypes[];
   id: number;
-  activeMessageId: number;
-  onDeleted: () => void;
 }
 
-function MessageGroup({ group, id, activeMessageId, onDeleted }: MessageGroupProps){
+function MessageGroup({ group, id }: MessageGroupProps){
   const isSender = group[0].sender_id === id;
 
   return(
@@ -43,8 +41,6 @@ function MessageGroup({ group, id, activeMessageId, onDeleted }: MessageGroupPro
                 text={message.text}
                 textId={message.text_id}
                 isSender={isSender}
-                messageId={activeMessageId}
-                onDeleted={onDeleted}
               />
             </div>
           ))}

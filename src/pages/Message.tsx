@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
@@ -8,7 +8,7 @@ import MessageDetail from './components/message/MessageDetail';
 import MessageModal, { SearchUsersTypes } from './components/message/MessageModal';
 import { ActionButton } from './components/ActionButton';
 import useApi from './components/hooks/useApi';
-import usePoll from './components/hooks/usePoll';
+import useSSE from './components/hooks/useSSE';
 
 interface MessageListTypes {
   message_id: number;
@@ -28,17 +28,24 @@ interface MessageActiveTypes {
   created_at: string;
 }
 
+interface MessageListSSETypes {
+  messages: MessageListTypes[];
+}
+
 function Message() {
   
   const [show, setShow] = useState<boolean>(false);
   const [messageList, setMessageList] = useState<MessageListTypes[]>([]);
   const [activeMessage, setActiveMessage] = useState<MessageActiveTypes | null>(null);
+  const [activeDeleted, setActiveDeleted] = useState<number | null>(null);
   const [selectedFriend, setSelectedFriend] = useState<SearchUsersTypes | null>(null);
   const [active, setActive] = useState<number | null>(null);
   const [isMobileDetail, setIsMobileDetail] = useState<boolean>(false);
   const [firstLoad, setFirstLoad] = useState<boolean>(true);
 
   const { fetchData, loading } = useApi();
+  const sseEndpoint = 'messages/stream';
+  const { data: sseData } = useSSE<MessageListSSETypes>(sseEndpoint);
 
   const modalClose = () => setShow(false);
   const modalShow = () => setShow(true);
@@ -46,6 +53,10 @@ function Message() {
   const handleActive = (messageId: number) => {
     setActive(messageId);
   };
+
+  const handleDeletedActive = (messageId: number) => {
+    setActiveDeleted(messageId);
+  }
 
   const handleSelectFriend = (friend: SearchUsersTypes) => {
     setActive(null);
@@ -59,13 +70,11 @@ function Message() {
     setActiveMessage(newMessage);
     setSelectedFriend(null);
     setActive(newMessage.message_id);
-    await handleMessageList();
   }
 
   const handleDeleteMessage = async () => {
     setActive(null);
     setActiveMessage(null);
-    await handleMessageList();
   };
 
   const handleToggleList = () => {
@@ -93,9 +102,9 @@ function Message() {
     }
   }, [fetchData]);
   
-  const handleMessageList = useCallback(async (signal?: AbortSignal) => {
+  const handleMessageList = useCallback(async () => {
     try {
-      const data = await fetchData('messages', 'GET', null, {}, true, { signal })    
+      const data = await fetchData('messages')    
       if (data && Array.isArray(data.messages)) {
         setMessageList(data.messages);
         setFirstLoad(false);
@@ -109,7 +118,15 @@ function Message() {
     }
   }, [fetchData]);
 
-  usePoll(handleMessageList, 10000, [true]);
+  useEffect(() => {
+    handleMessageList();
+  }, [handleMessageList]);
+
+  useEffect(() => {
+    if (sseData?.messages) {
+      setMessageList(sseData.messages)
+    }
+  }, [sseData])
 
   return (
     <section className="mb-3">
@@ -138,6 +155,7 @@ function Message() {
                     handleClose={modalClose} 
                     handleActive={handleActive}
                     handleClick={handleClick}
+                    handleDeletedActive={handleDeletedActive}
                     onFriendSelect={handleSelectFriend}
                   />
                 </Card.Header>
@@ -156,6 +174,7 @@ function Message() {
         <Col sm={7} lg={8} xxl={9} className={`ps-sm-0 ${(!activeMessage && !selectedFriend) && "d-none d-sm-block"}`}>
           <MessageDetail 
             activeMessage={activeMessage}
+            activeDeleted={activeDeleted}
             selectedFriend={selectedFriend}
             onNewMessage={handleNewMessage}
             isMobileDetail={isMobileDetail}

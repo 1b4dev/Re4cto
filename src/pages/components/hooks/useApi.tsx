@@ -41,8 +41,11 @@ function useApi(initialLoading: boolean = false) {
       if (!response.ok) {
         if (response.status === 401) {
           localStorage.removeItem('token');
-          navigate('/login', { state: { message: 'Session expired', variant: 'warning' } });        }
-        throw new Error(`API response: (${response.status}) ${data.error}`);
+          navigate('/login', { state: { message: 'Session expired', variant: 'warning' } });
+          return;        
+        } else {
+          throw new Error(`API response: (${response.status}) ${data.error}`);
+        }
       }
 
       return data;

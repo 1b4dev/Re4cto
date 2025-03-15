@@ -9,7 +9,7 @@ import EmptyComponent from '../EmptyComponent';
 import MessageGroup from './MessageComponents';
 import { ActionButton } from '../ActionButton';
 import useApi from '../hooks/useApi';
-import usePoll from '../hooks/usePoll';
+import useSSE from '../hooks/useSSE';
 
 interface DecodedTokenType {
   user_id: number;
@@ -34,6 +34,10 @@ interface ActiveMessageTypes {
   created_at: string;
 }
 
+interface ActiveSSETypes {
+  active_message: ActiveMessageTypes | null;
+}
+
 interface SelectedFriendTypes {
   friend_id: number;
   name: string;
@@ -42,6 +46,7 @@ interface SelectedFriendTypes {
 
 interface MessageDetailProps {
   activeMessage: ActiveMessageTypes | null;
+  activeDeleted: number | null;
   selectedFriend: SelectedFriendTypes | null;
   onNewMessage: (newMessage: ActiveMessageTypes) => void;
   isMobileDetail: boolean;
@@ -49,18 +54,31 @@ interface MessageDetailProps {
 }
   
 
-function MessageDetail({ activeMessage, selectedFriend, onNewMessage, isMobileDetail, toggleList }: MessageDetailProps) {
+function MessageDetail({ activeMessage, activeDeleted, selectedFriend, onNewMessage, isMobileDetail, toggleList }: MessageDetailProps) {
   const [messages, setMessages] = useState<MessageTypes[]>([]);
   const [chat, setChat] = useState('');
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const messagesLengthRef = useRef<number>(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const abort = new AbortController();
 
   const { fetchData } = useApi();
   const isNewChat = selectedFriend && !activeMessage;
   const token = jwtDecode<DecodedTokenType>(localStorage.getItem('token') as string);
   const id = token.user_id;
+
+  const sseEndpoint = activeMessage?.message_id ? `messages/active/stream/${activeMessage.message_id}` : null;
+  const { data: sseData } = useSSE<ActiveSSETypes>(sseEndpoint);
+
+  useEffect(() => {
+    if (sseData?.active_message) {
+      try {
+        const parsedContent = JSON.parse(sseData.active_message.content);
+        setMessages(parsedContent.messages);
+      } catch (error) {
+        console.error('Error parsing SSE data: ', error);
+      }
+    }
+  }, [sseData]);
 
   const adjustTextarea = useCallback (() => {
     if (textareaRef.current) {
@@ -81,28 +99,6 @@ function MessageDetail({ activeMessage, selectedFriend, onNewMessage, isMobileDe
     adjustTextarea();
   }, [adjustTextarea]);
 
-  const pollMessage = useCallback (async (signal: AbortSignal) => {
-    if (!activeMessage?.message_id) return;      
-    try {
-      const data = await fetchData(`messages/active/${activeMessage.message_id}`, 'GET', null, {}, true, { signal });
-      if (signal.aborted) return;
-      if (data?.active_message) {
-        const parsedContent = JSON.parse(data.active_message.content);
-        if (parsedContent.messages.length !== messages.length) {
-          setMessages(parsedContent.messages);
-        }
-      } else {
-        throw new Error('Error in processing API call');
-      }
-    } catch (error) {
-      if ((error as Error).name !== 'AbortError') {
-        console.error('Error in pollMessage:', error);
-      }
-    }
-  }, [activeMessage?.message_id, fetchData]);
-
-  usePoll(pollMessage, 6000, [activeMessage?.message_id]);
-
   useEffect(() => {
     if (activeMessage?.content){
       const parsedContent = JSON.parse(activeMessage.content);
@@ -119,7 +115,7 @@ function MessageDetail({ activeMessage, selectedFriend, onNewMessage, isMobileDe
       scrollToBottom();
       messagesLengthRef.current = messages.length;
     }
-  }, [messages, selectedFriend]);
+  }, [messages, selectedFriend, scrollToBottom]);
 
   const groupMessages = useMemo(() => {
     return (messages: MessageTypes[]) => messages.reduce((groups: MessageTypes[][], message, index) => {      
@@ -148,24 +144,20 @@ function MessageDetail({ activeMessage, selectedFriend, onNewMessage, isMobileDe
     if (!chat.trim()) return;
 
     try {
-      const endpoint = selectedFriend ? 'messages/create' : 'messages/reply';
-      const method = selectedFriend ? 'POST' : 'PUT';
-      const body = selectedFriend
+      const endpoint = selectedFriend && !activeDeleted ? 'messages/create' : 'messages/reply';
+      const method = selectedFriend && !activeDeleted ? 'POST' : 'PUT';
+      const body = selectedFriend && !activeDeleted
         ? { message: chat, receiver_id: messageId }
         : { reply: chat, message_id: messageId };
       const response = await fetchData(endpoint, method, body);
       if (response?.message_id || response?.message) {
-        const activeMessageId = response?.message_id || messageId
-        const data = await fetchData(`messages/active/${activeMessageId}`);
-        if (data?.active_message) {
-          if (selectedFriend) {
+        resetTextarea();
+        if (selectedFriend && response?.message_id) {
+          const activeMessageId = response?.message_id;
+          const data = await fetchData(`messages/active/${activeMessageId}`);
+          if (data?.active_message) {
             onNewMessage(data.active_message)
           }
-          const parsedContent = JSON.parse(data.active_message.content);
-          setMessages(parsedContent.messages);
-          resetTextarea();
-        } else {
-          console.error('Error fetching chat messages after reply');
         }
       } else {
         console.error('Message reply was not successful');
@@ -173,7 +165,7 @@ function MessageDetail({ activeMessage, selectedFriend, onNewMessage, isMobileDe
     } catch (error) {
         console.error('Error in handleReply:', (error as Error).message);
     }
-  }, [chat, fetchData, selectedFriend, onNewMessage]);
+  }, [chat, fetchData, selectedFriend, activeDeleted, onNewMessage, resetTextarea]);
   
   return (
     <Card className="rounded-4" style={{height : '605px'}}>
@@ -214,13 +206,11 @@ function MessageDetail({ activeMessage, selectedFriend, onNewMessage, isMobileDe
                 key={groupIndex}
                 group={group}
                 id={id}
-                activeMessageId={activeMessage?.message_id ?? 0}
-                onDeleted={() => pollMessage(abort.signal)}
               />
             ))
           ) : (
             <EmptyComponent
-              title={isNewChat 
+              title={isNewChat  
                 ? `Start a conversation with @${selectedFriend.username}` 
                 : "Select a message"
               }
@@ -236,7 +226,7 @@ function MessageDetail({ activeMessage, selectedFriend, onNewMessage, isMobileDe
       </Card.Body>
       {(selectedFriend || messages.length > 0) && (
         <Card.Footer className="rounded-bottom-4">
-          <Form onSubmit={handleReply} id={String(isNewChat ? selectedFriend?.friend_id : activeMessage?.message_id)} method="post">
+          <Form onSubmit={handleReply} id={String(activeDeleted ? activeDeleted : !activeDeleted && isNewChat ? selectedFriend?.friend_id : activeMessage?.message_id)} method="post">
             <div className="text-muted d-flex justify-content-start align-items-center my-1">
               <div className="position-relative w-100">
                 <Form.Control 

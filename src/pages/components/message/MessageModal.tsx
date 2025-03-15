@@ -19,10 +19,11 @@ interface MessageModalProps {
   handleClose: () => void;
   handleActive: (id: number) => void;
   handleClick: (id: number) => void;
+  handleDeletedActive: (id: number) => void;
   onFriendSelect: (friend: SearchUsersTypes) => void;
 }
 
-function MessageModal({ show, handleClose, handleActive, handleClick, onFriendSelect }: MessageModalProps) {
+function MessageModal({ show, handleClose, handleActive, handleClick, handleDeletedActive, onFriendSelect }: MessageModalProps) {
   const { fetchData } = useApi();
   const [search, setSearch] = useState('');
   const [friends, setFriends] = useState<SearchUsersTypes[]>([]);
@@ -40,7 +41,7 @@ function MessageModal({ show, handleClose, handleActive, handleClick, onFriendSe
     } catch (error) {
       console.error('Error in handleLoadFriends:', (error as Error).message);
     }
-  }, [fetchData]);
+  }, [fetchData, friends.length]);
 
   useEffect(() => {
     if (show) {
@@ -58,9 +59,12 @@ function MessageModal({ show, handleClose, handleActive, handleClick, onFriendSe
   const handleFriendSelect = async (friend: SearchUsersTypes) => {
     try {
       const data = await fetchData(`messages/check/${friend.friend_id}`);
-      if (data.message_id) {
+      if (data.message_id && !data.is_deleted === true) {
         handleClick(data.message_id);
         handleActive(data.message_id);
+      } else if (data.is_deleted === true) {
+        handleDeletedActive(data.message_id);
+        onFriendSelect(friend);
       } else if (data.message) {
         onFriendSelect(friend);
       } else {

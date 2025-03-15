@@ -32,7 +32,7 @@ function SwipeableListItem({ children, onClick, onDelete }: SwipeableListItemPro
     } else {
       setTranslation(0);
     }
-  }, [translation]);
+  }, [translation, deleteThreshold]);
 
   const handleDeleteClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();

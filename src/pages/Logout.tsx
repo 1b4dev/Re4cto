@@ -12,6 +12,7 @@ function Logout() {
       try {
         const data = await fetchData('logout', 'POST');
         localStorage.removeItem('token');
+        if (sessionStorage.getItem('sseToken')) sessionStorage.removeItem('sseToken');        
         navigate('/login', { state: { message: data.message, variant: 'success' } });
       } catch (error) {
         console.error('Logout failed:', error);

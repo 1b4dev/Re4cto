@@ -10,7 +10,7 @@ Re4cto features:
  - Uses functional programming as recommended by the current React documentation.
  - Uses custom fetch hook with error provider for fetch requests so fetch errors handled with simple bootstrap toast element.
  - Authentication for fetch hooks is based on Bearer token stored in the browser's local storage but can be converted to cookie based.
- - Uses short polling mechanism to retrieve messages so it can even work shared hosting plans.
+ - Uses Server Send Events(SSE) mechanism to retrieve messages so it can give live updates to users like WebSockets without backend server changes needed.
  - Includes a Dockerfile to build for SaaS platforms.
 
  Build demo is available on:
@@ -19,7 +19,9 @@ Re4cto features:
  username:react (or) docker
  password:react (or) reacton12
 
- ⚠️ **Important Note: This app does not contains backend, so you need to connect or create and connect a backend to use Re4cto.**
+ **Since demo is deployed in free onRender instance, accessing it can be delayed by 50 seconds or more.**
+
+ ⚠️ **Important Note: This app does not contains backend, so you need to connect or create backend to use Re4cto.**
 
 ## Getting Started 🚀
 

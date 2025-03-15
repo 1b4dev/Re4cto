@@ -9,11 +9,9 @@ interface MessageActionsProps {
   text: string;
   textId: string;
   isSender: boolean;
-  messageId: number;
-  onDeleted: () => void;
 }
 
-function MessageActions({ text, textId, isSender, messageId, onDeleted }: MessageActionsProps){
+function MessageActions({ text, textId, isSender }: MessageActionsProps){
   const { fetchData } = useApi();
   const [showOverlay, setShowOverlay] = useState(false);
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -44,10 +42,9 @@ function MessageActions({ text, textId, isSender, messageId, onDeleted }: Messag
     if(!confirmDelete) return;
     setDeleting(confirmDelete)
     try{
-      await fetchData (`message/active/${messageId}/delete`, 'DELETE', {
+      await fetchData ('messages/active/delete', 'DELETE', {
         textId: confirmDelete
       })
-      onDeleted()
     } catch (error) {
       console.error(error);
     } finally {
@@ -55,7 +52,7 @@ function MessageActions({ text, textId, isSender, messageId, onDeleted }: Messag
       setShowModal(false);
       setConfirmDelete(null);
     }
-  }, [confirmDelete, fetchData, onDeleted]);
+  }, [confirmDelete, fetchData]);
 
   return (
     <>
