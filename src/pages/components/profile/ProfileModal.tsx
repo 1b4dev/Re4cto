@@ -20,6 +20,12 @@ interface UserTypes {
   last_login: string | null;
 }
 
+interface ModalResponseType {
+  token: string;
+  message?: string;
+  error?: string;
+}
+
 interface ProfileModalProps {
   show: boolean;
   onHide: () => void;
@@ -67,7 +73,7 @@ function ProfileModal({ show, onHide, user, updateUser }: ProfileModalProps) {
         showAlert('You need to make changes for submit', 'warning');
         return;
       }
-      const data = await fetchData('profile/update', 'PUT', formData, {}, true, { signal: controller.signal });
+      const data = await fetchData('profile/update', 'PUT', formData, {}, true, { signal: controller.signal }) as ModalResponseType;
       if (data.token) {
         localStorage.setItem('token', data.token);
         showAlert(data.message || 'Profile updated successfully on frontend', 'success');

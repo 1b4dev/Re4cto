@@ -20,6 +20,11 @@ interface RequestTypes {
   username: string;
 }
 
+interface ResponseTypes {
+  friends: FriendTypes[];
+  requests: RequestTypes[];
+}
+
 function Friends() {
   const [show, setShow] = useState(false)
   const [friends, setFriends] = useState<FriendTypes[]>([]);
@@ -31,7 +36,7 @@ function Friends() {
       const [friendsData, requestsData] = await Promise.all([
         fetchData('friends'),
         fetchData('friends/pending')
-      ]);
+      ]) as ResponseTypes[];
       if (friendsData && Array.isArray(friendsData.friends)) {
         setFriends(friendsData.friends);
       }

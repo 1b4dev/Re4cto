@@ -15,6 +15,10 @@ interface SearchUsersTypes {
   username: string;
 }
 
+interface SearchResponseType {
+  results: SearchUsersTypes[];
+}
+
 interface FriendsModalProps {
   show: boolean;
   onHide: () => void;
@@ -37,7 +41,7 @@ function FriendsModal({ show, onHide }: FriendsModalProps) {
         setHasSearched(true);
         setSearchLoading(true);
         try {
-          const response = await fetchData(`friends/search?q=${encodeURIComponent(debouncedSearch)}`, 'GET', null, {}, true, { signal: controller.signal });
+          const response = await fetchData(`friends/search?q=${encodeURIComponent(debouncedSearch)}`, 'GET', null, {}, true, { signal: controller.signal }) as SearchResponseType;
           if (response) {
             setSearchUsers(response.results);
           } else {

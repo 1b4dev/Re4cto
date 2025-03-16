@@ -13,7 +13,7 @@ import useSSE from '../hooks/useSSE';
 
 interface DecodedTokenType {
   user_id: number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface MessageTypes {
@@ -21,7 +21,13 @@ interface MessageTypes {
   sent_at: string;
   text: string;
   text_id: string;
-  [key: string]: any;
+  [key: string]: unknown;
+}
+
+interface MessageResponseType {
+  message_id?: number;
+  message?: string;
+  active_message?: ActiveMessageTypes;
 }
 
 interface ActiveMessageTypes {
@@ -149,12 +155,12 @@ function MessageDetail({ activeMessage, activeDeleted, selectedFriend, onNewMess
       const body = selectedFriend && !activeDeleted
         ? { message: chat, receiver_id: messageId }
         : { reply: chat, message_id: messageId };
-      const response = await fetchData(endpoint, method, body);
+      const response = await fetchData(endpoint, method, body) as MessageResponseType;
       if (response?.message_id || response?.message) {
         resetTextarea();
         if (selectedFriend && response?.message_id) {
           const activeMessageId = response?.message_id;
-          const data = await fetchData(`messages/active/${activeMessageId}`);
+          const data = await fetchData(`messages/active/${activeMessageId}`) as ActiveSSETypes;
           if (data?.active_message) {
             onNewMessage(data.active_message)
           }

@@ -24,7 +24,7 @@ jobs:
     - name: Build app
       run: |
         npm install
-        npm run build
+        npm run build:gh
 
     - name: Deploy
       uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e

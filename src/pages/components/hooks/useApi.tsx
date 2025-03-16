@@ -13,7 +13,7 @@ function useApi(initialLoading: boolean = false) {
   const apiURL = import.meta.env.VITE_API_URL;
   const authType = (import.meta.env.VITE_AUTH_TYPE || 'bearer') as AuthType;
 
-  const fetchData = useCallback(async (endpoint: string, method: string = 'GET', body: any = null, customHeaders: Record<string, string> = {}, requiresAuth: boolean = true, signals: RequestInit = {}): Promise<any> => {
+  const fetchData = useCallback(async (endpoint: string, method: string = 'GET', body: Record<string, unknown> | null = null, customHeaders: Record<string, string> = {}, requiresAuth: boolean = true, signals: RequestInit = {}): Promise<unknown> => {
     setLoading(true);
     loadingCount.current++;
     let isAborted = false;
@@ -49,15 +49,21 @@ function useApi(initialLoading: boolean = false) {
       }
 
       return data;
-    } catch (error: any) {
-      if (error.name === 'AbortError') {
-        isAborted = true;
-        console.error(endpoint, 'request aborted')
-        throw error;
-      }
-      handleError(error.response ? error.response.data : error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) { 
+        if (error.name === 'AbortError') {
+          isAborted = true;
+          console.error(endpoint, 'request aborted')
+          throw error;
+        }
+      handleError((error as { response?: { data: string } }).response?.data || error.message);
       console.error(error);
       throw error;
+      } else {
+        handleError('An unknown error occurred');
+        console.error('An unknown error occurred:', error);
+        throw new Error('Unknown type of error');
+      }
     } finally {
       loadingCount.current--;
       if (loadingCount.current === 0 && !isAborted) {

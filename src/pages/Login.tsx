@@ -16,6 +16,12 @@ interface LoginDataType {
   username: string;
   password: string;
   remember: boolean;
+  [key: string]: unknown; 
+}
+
+interface LoginResponseType {
+  token: string;
+  error?: string;
 }
 
 interface AlertState {
@@ -102,7 +108,7 @@ function Login() {
   const handleLogin = useCallback(async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const data = await fetchData('login', 'POST', loginData, {}, false);
+      const data = await fetchData('login', 'POST', loginData, {}, false) as LoginResponseType;
       if (data.token) {
         localStorage.setItem('token', data.token);
         navigate(redirect ?? '/')
@@ -112,8 +118,8 @@ function Login() {
       } else {
         throw new Error('Login failed');
       }
-    } catch (error: any) {
-      console.error('Error in handleLogin:', error.message); 
+    } catch (error) {
+      console.error('Error in handleLogin:', (error as Error).message); 
     }
   }, [fetchData, loginData, redirect, showAlert, setLoginError, navigate])
 

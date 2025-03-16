@@ -12,7 +12,7 @@ interface ActionButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>{
   size?: ButtonSize;
   isLoading?: boolean;
   children?: React.ReactNode;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export const ActionButton = memo(({ variant, classes, size, isLoading, onClick, disabled, children, ...rest }: ActionButtonProps) => (

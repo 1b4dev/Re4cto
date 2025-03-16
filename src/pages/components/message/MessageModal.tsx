@@ -14,6 +14,17 @@ export interface SearchUsersTypes {
   username: string;
 }
 
+interface MessageTypes {
+  message_id: number;
+  is_deleted: boolean;
+  message?: string;
+  [key: string]: unknown;
+}
+
+interface SearchResponseType {
+  friends: SearchUsersTypes[];
+}
+
 interface MessageModalProps {
   show: boolean;
   handleClose: () => void;
@@ -32,7 +43,7 @@ function MessageModal({ show, handleClose, handleActive, handleClick, handleDele
   const handleLoadFriends = useCallback(async () => {
     if (friends.length > 0) return;
     try {
-      const data = await fetchData('friends');
+      const data = await fetchData('friends') as SearchResponseType;
       if (data && Array.isArray(data.friends)) {
         setFriends(data.friends)
       } else {
@@ -58,7 +69,7 @@ function MessageModal({ show, handleClose, handleActive, handleClick, handleDele
 
   const handleFriendSelect = async (friend: SearchUsersTypes) => {
     try {
-      const data = await fetchData(`messages/check/${friend.friend_id}`);
+      const data = await fetchData(`messages/check/${friend.friend_id}`) as MessageTypes;
       if (data.message_id && !data.is_deleted === true) {
         handleClick(data.message_id);
         handleActive(data.message_id);

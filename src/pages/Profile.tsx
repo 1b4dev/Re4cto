@@ -14,6 +14,10 @@ interface UserTypes {
   last_login: string | null;
 }
 
+interface UserDataTypes {
+  user: UserTypes;
+}
+
 interface ProfileFieldTypes {
   label: string;
   value: string | undefined;
@@ -32,14 +36,14 @@ function Profile({ updateUser }: ProfileProps) {
   useEffect(() => {
     const handleUser = async () => {
       try {
-        const data = await fetchData('profile'); 
+        const data = await fetchData('profile') as UserDataTypes; 
         if (data) {
           setUser(data.user);
         } else {
           throw new Error('No data received');
         }
-      } catch (error: any) {
-        console.error('Error in handleUser:', error.message); 
+      } catch (error) {
+        console.error('Error in handleUser:', (error as Error).message); 
       }
     };  
     handleUser();

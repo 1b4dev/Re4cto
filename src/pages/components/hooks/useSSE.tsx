@@ -159,7 +159,7 @@ function useSSE<T>(
       setIsConnected(false);
       isConnectingRef.current = false;
     }
-  }, [apiURL, eventName, options.onError, options.onOpen, options.withCredentials]);
+  }, [apiURL, isConnected, eventName, options, options.onError, options.onOpen, options.withCredentials]);
 
   useEffect(() => {
     if (endpoint) {

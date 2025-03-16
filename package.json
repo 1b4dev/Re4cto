@@ -1,7 +1,7 @@
 {
   "name": "re4cto",
   "private": true,
-  "version": "1.2.0",
+  "version": "1.2.1",
   "type": "module",
   "homepage": "https://1b4dev.github.io/Re4cto",
   "bugs": {
@@ -11,6 +11,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:gh" : "tsc -b && vite build --base=/Re4cto/",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "lint": "eslint . --ext .jsx --report-unused-disable-directives --max-warnings 0",

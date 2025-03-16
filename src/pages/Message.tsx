@@ -32,6 +32,10 @@ interface MessageListSSETypes {
   messages: MessageListTypes[];
 }
 
+interface MessageResponseTypes {
+  active_message: MessageActiveTypes;
+}
+
 function Message() {
   
   const [show, setShow] = useState<boolean>(false);
@@ -86,7 +90,7 @@ function Message() {
 
   const handleClick = useCallback(async (id: number) => {
     try {
-      const data = await fetchData(`messages/active/${id}`);  
+      const data = await fetchData(`messages/active/${id}`) as MessageResponseTypes;  
       if (data.active_message) {
         setActiveMessage(data.active_message);
         const readMessage = await fetchData(`messages/active/read`, 'PUT', {message_id:id});
@@ -104,7 +108,7 @@ function Message() {
   
   const handleMessageList = useCallback(async () => {
     try {
-      const data = await fetchData('messages')    
+      const data = await fetchData('messages') as MessageListSSETypes;
       if (data && Array.isArray(data.messages)) {
         setMessageList(data.messages);
         setFirstLoad(false);
