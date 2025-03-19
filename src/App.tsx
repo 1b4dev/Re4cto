@@ -6,9 +6,11 @@ import { ProtectedRoute } from './AppRoute';
 import { ErrorProvider } from './pages/components/hooks/useError';
 import './App.css';
 
+const base = import.meta.env.VITE_BASE_NAME || '/';
+
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={base}>
       <ErrorProvider>
         <Routes>
           <Route path="/login" element={<Login />} />

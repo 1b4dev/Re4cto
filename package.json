@@ -1,7 +1,7 @@
 {
   "name": "re4cto",
   "private": true,
-  "version": "1.2.1",
+  "version": "1.2.2",
   "type": "module",
   "homepage": "https://1b4dev.github.io/Re4cto",
   "bugs": {
@@ -11,7 +11,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "build:gh" : "tsc -b && vite build --base=/Re4cto/",
+    "build:gh": "tsc -b && vite build --base=/Re4cto/ --mode gh-pages",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "lint": "eslint . --ext .jsx --report-unused-disable-directives --max-warnings 0",
@@ -23,15 +23,16 @@
     "react": "^19.0.0",
     "react-bootstrap": "^2.10.9",
     "react-dom": "^19.0.0",
-    "react-router-dom": "^7.3.0"
+    "react-router-dom": "^7.4.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",
-    "@types/react": "^19.0.10",
+    "@swc/core": "^1.11.11",
+    "@types/react": "^19.0.12",
     "@types/react-bootstrap": "^0.32.37",
     "@types/react-dom": "^19.0.4",
     "@vitejs/plugin-react": "^4.3.4",
-    "@vitejs/plugin-react-swc": "^3.8.0",
+    "@vitejs/plugin-react-swc": "^3.8.1",
     "eslint": "^9.22.0",
     "eslint-plugin-react": "^7.37.4",
     "eslint-plugin-react-hooks": "^5.2.0",
