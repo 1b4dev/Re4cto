@@ -49,6 +49,17 @@ function ProfileModal({ show, onHide, user, updateUser }: ProfileModalProps) {
     }
   }, [user]);
 
+  useEffect(() => {
+    const controller = new AbortController();
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      controller.abort();
+    }
+  }, []);
+
   const hasChanged = useMemo(() => {
     if(!user) return false;
       return Object.keys(formData).some(key => formData[key as keyof UserTypes] !== user[key as keyof UserTypes]);
@@ -90,12 +101,6 @@ function ProfileModal({ show, onHide, user, updateUser }: ProfileModalProps) {
       console.error('Error in handleSaveChanges:', (error as Error).message);
       showAlert((error as Error).message || 'An error occurred while updating the profile on frontend');
     }
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-      controller.abort();
-    }
   }, [fetchData, hasChanged, showAlert, onHide, user, updateUser]);
 
   const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
@@ -104,6 +109,13 @@ function ProfileModal({ show, onHide, user, updateUser }: ProfileModalProps) {
   }, [handleSaveChanges, formData]);
 
   const handleChange = useCallback((field: keyof UserTypes) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: e.target.value
+    }));
+  }, []);
+
+  const handleBlur = useCallback((field: keyof UserTypes) => (e: React.FocusEvent<HTMLInputElement>) => {
     setFormData(prev => ({
       ...prev,
       [field]: e.target.value.trim()
@@ -124,6 +136,7 @@ function ProfileModal({ show, onHide, user, updateUser }: ProfileModalProps) {
               field={field}
               value={formData[field.id as keyof UserTypes] || ''}
               onChange={handleChange(field.id as keyof UserTypes)}
+              onBlur={handleBlur(field.id as keyof UserTypes)}
             />
           ))}
         </Form>
