@@ -19,8 +19,6 @@ Re4cto features:
  username:react (or) docker
  password:react (or) reacton12
 
- **Since demo is deployed in free onRender instance, accessing it can be delayed by 50 seconds or more.**
-
  ⚠️ **Important Note: This app does not contains backend, so you need to connect or create backend to use Re4cto.**
 
 ## Getting Started 🚀
