@@ -184,7 +184,7 @@ function MessageDetail({ activeMessage, activeDeleted, selectedFriend, onNewMess
                 size="sm"
                 onClick={toggleList}
               >
-                &larr; 
+                {'\u2190'}
               </ActionButton>
             </Col>
           )}

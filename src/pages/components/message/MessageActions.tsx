@@ -65,7 +65,7 @@ function MessageActions({ text, textId, isSender }: MessageActionsProps){
           size="lg"
           className="text-body px-1 fs-6 fw-bolder bg-transparent border-0 dropdown-caret"
         >
-          &#8942;
+          {'\u22EE'}
         </Dropdown.Toggle>
         <Dropdown.Menu
           className="bg-body-tertiary rounded-3 shadow-sm p-2"
