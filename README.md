@@ -14,7 +14,7 @@ Re4cto features:
  - Includes a Dockerfile to build for SaaS platforms.
 
  Build demo is available on:
- https://re4cto.onrender.com
+ https://src.1b4.dev/re4cto/
 
  username:react (or) docker
  password:react (or) reacton12
