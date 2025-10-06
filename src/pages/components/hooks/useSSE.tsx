@@ -59,12 +59,12 @@ function useSSE<T>(
     }
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('re4cto-token');
       if (!token) {
         throw new Error('Authentication token not found');
       }
 
-      let sseToken = sessionStorage.getItem('sseToken');
+      let sseToken = sessionStorage.getItem('re4cto-sseToken');
 
       if (!sseToken) {
         const response = await fetch(`${apiURL}sseauth`, {
@@ -82,7 +82,7 @@ function useSSE<T>(
         
         const sessionData = await response.json();
         sseToken = sessionData.sseToken;
-        sessionStorage.setItem('sseToken', sessionData.sseToken);
+        sessionStorage.setItem('re4cto-sseToken', sessionData.sseToken);
         
         if (!sseToken) {
           throw new Error('No session token received from server');
@@ -126,7 +126,7 @@ function useSSE<T>(
         setError(new Error('SSE Connection error'));
         setIsConnected(false);
         isConnectingRef.current = false;
-        sessionStorage.removeItem('sseToken');
+        sessionStorage.removeItem('re4cto-sseToken');
         if (options.onError) options.onError(event);
         
         if (retryCountRef.current < maxRetries) {
@@ -145,7 +145,7 @@ function useSSE<T>(
           }
           eventSourceRef.current = null;
           retryCountRef.current = 0;
-          sessionStorage.removeItem('sseToken');
+          sessionStorage.removeItem('re4cto-sseToken');
         }
       };
 

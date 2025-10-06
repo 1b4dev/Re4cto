@@ -110,7 +110,7 @@ function Login() {
     try {
       const data = await fetchData('login', 'POST', loginData, {}, false) as LoginResponseType;
       if (data.token) {
-        localStorage.setItem('token', data.token);
+        localStorage.setItem('re4cto-token', data.token);
         navigate(redirect ?? '/')
       } else if (data.error) {
         showAlert(data.error);
@@ -158,7 +158,7 @@ function Login() {
             >
               Sign in
             </ActionButton>
-            <p className="mt-5 mb-3 text-body-secondary">©{new Date().getFullYear()} Re4cto Client v{version} | Created by 1B4dev</p>
+            <p className="mt-5 mb-3 text-body-secondary">©{new Date().getFullYear()} Re4cto Client v{version} | Created by <a href="https://1b4.dev" target="_blank" rel="noopener noreferrer">1B4dev</a></p>
           </Form>
         </Col>
       </Row>

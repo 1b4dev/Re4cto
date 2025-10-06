@@ -86,7 +86,7 @@ function ProfileModal({ show, onHide, user, updateUser }: ProfileModalProps) {
       }
       const data = await fetchData('profile/update', 'PUT', formData, {}, true, { signal: controller.signal }) as ModalResponseType;
       if (data.token) {
-        localStorage.setItem('token', data.token);
+        localStorage.setItem('re4cto-token', data.token);
         showAlert(data.message || 'Profile updated successfully on frontend', 'success');
         updateUser({...user, ...formData} as UserTypes)
         timeoutRef.current = setTimeout(() => {
@@ -108,17 +108,12 @@ function ProfileModal({ show, onHide, user, updateUser }: ProfileModalProps) {
     handleSaveChanges(formData);
   }, [handleSaveChanges, formData]);
 
-  const handleChange = useCallback((field: keyof UserTypes) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({
+  const handleInputChange = useCallback((e: React.SyntheticEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.currentTarget;
+    const nextVal = e.type === 'blur' ? value.trim() : value;
+    setFormData((prev) => ({
       ...prev,
-      [field]: e.target.value
-    }));
-  }, []);
-
-  const handleBlur = useCallback((field: keyof UserTypes) => (e: React.FocusEvent<HTMLInputElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: e.target.value.trim()
+      [id as keyof UserTypes]: nextVal,
     }));
   }, []);
 
@@ -135,8 +130,8 @@ function ProfileModal({ show, onHide, user, updateUser }: ProfileModalProps) {
               key={field.id}
               field={field}
               value={formData[field.id as keyof UserTypes] || ''}
-              onChange={handleChange(field.id as keyof UserTypes)}
-              onBlur={handleBlur(field.id as keyof UserTypes)}
+              onChange={handleInputChange}
+              onBlur={handleInputChange}
             />
           ))}
         </Form>

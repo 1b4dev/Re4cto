@@ -22,7 +22,7 @@ function Header({ user }: HeaderProps) {
 
   const [username, setUsername] = useState('')
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('re4cto-token');
     const decodedToken = token ? jwtDecode<DecodedTokenTypes>(token) : null;
     if (decodedToken) {
       setUsername(decodedToken.username);

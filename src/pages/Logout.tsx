@@ -11,8 +11,8 @@ function Logout() {
     const logout = async () => {
       try {
         const data = await fetchData('logout', 'POST');
-        localStorage.removeItem('token');
-        if (sessionStorage.getItem('sseToken')) sessionStorage.removeItem('sseToken');        
+        localStorage.removeItem('re4cto-token');
+        if (sessionStorage.getItem('re4cto-sseToken')) sessionStorage.removeItem('re4cto-sseToken');
         navigate('/login', { state: { message: (data as { message: string }).message, variant: 'success' } });
       } catch (error) {
         console.error('Logout failed:', error);

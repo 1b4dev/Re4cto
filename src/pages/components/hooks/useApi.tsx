@@ -19,7 +19,7 @@ function useApi(initialLoading: boolean = false) {
     let isAborted = false;
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('re4cto-token');
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
         'Origin': window.origin,
@@ -40,7 +40,7 @@ function useApi(initialLoading: boolean = false) {
 
       if (!response.ok) {
         if (response.status === 401) {
-          localStorage.removeItem('token');
+          localStorage.removeItem('re4cto-token');
           navigate('/login', { state: { message: 'Session expired', variant: 'warning' } });
           return;        
         } else {

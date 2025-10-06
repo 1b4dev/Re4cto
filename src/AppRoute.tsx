@@ -6,7 +6,7 @@ interface ProtectedRouteProps {
 
 export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const { pathname } = useLocation();
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('re4cto-token');
 
   return token || document.cookie ? children : (
     <Navigate 

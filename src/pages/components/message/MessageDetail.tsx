@@ -69,7 +69,7 @@ function MessageDetail({ activeMessage, activeDeleted, selectedFriend, onNewMess
 
   const { fetchData } = useApi();
   const isNewChat = selectedFriend && !activeMessage;
-  const token = jwtDecode<DecodedTokenType>(localStorage.getItem('token') as string);
+  const token = jwtDecode<DecodedTokenType>(localStorage.getItem('re4cto-token') as string);
   const id = token.user_id;
 
   const sseEndpoint = activeMessage?.message_id ? `messages/active/stream/${activeMessage.message_id}` : null;

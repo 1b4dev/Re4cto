@@ -21,14 +21,22 @@ function ConfirmModal({ show, title, message, onHide, onConfirm, isDeleting, con
       <Modal.Body className="pb-0">
         <p>{message}</p>
       </Modal.Body>
-      <Modal.Footer className="flex-column align-items-stretch pb-3 border-top-0">
+      <Modal.Footer className="d-flex w-100 pb-3 border-top-0">
         <ActionButton
           variant="danger"          
           disabled={isDeleting}
           isLoading={isDeleting}
           onClick={onConfirm}
+          className="flex-grow-1"
         >
           {confirmButton}
+        </ActionButton>
+        <ActionButton 
+          variant="secondary" 
+          onClick={onHide}
+          className="flex-grow-1"
+        >
+          Cancel
         </ActionButton>
       </Modal.Footer>
     </Modal>

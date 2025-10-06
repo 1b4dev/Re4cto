@@ -14,7 +14,7 @@ Re4cto features:
  - Includes a Dockerfile to build for SaaS platforms.
 
  Build demo is available on:
- https://src.1b4.dev/re4cto/
+ https://src.1b4.dev/re4cto/ or on GitHub Pages
 
  username:react (or) docker
  password:react (or) reacton12
@@ -50,7 +50,7 @@ Re4cto features:
     You can simply edit .env file to connect your backend. If you don't have backend, you can use the currently connected backend for testing and development purposes. Please don't forget the edit fetch links on api request according to your backend.
     ``` bash
     # Edit .env file to point to your backend API
-    VITE_API_URL=https://reactonapi.onrender.com/api/
+    VITE_API_URL=https://kern.1b4.dev/re4cto/api/
     ```
 
 4. **Run the app**
@@ -64,11 +64,14 @@ Re4cto features:
 To connect your own backend:
 1. Update VITE_API_URL in .env
 2. Modify API endpoints
-3. Adjust authentication method in .env
+3. Adjust authentication method in .env if you want to use cookie based auth
     ``` bash
-    src/page/components/hooks/useApi.tsx # Switch between token/cookie auth basically supported in API calls. You also need to adjust Login.tsx and other token releated files if you want to use cookie method.
+    src/page/components/hooks/useApi.tsx 
+    # Switch between token/cookie auth basically supported in API calls. You also need to adjust Login.tsx and other token releated files if you want to use cookie method.
     ``` 
 ### Build & Deployment 🛠️
+
+    Please note that when you building Re4cto you need to adjust app base because of how Vite works. Currently app base set to yourdomainname.tld/re4cto/
 
     # Create production build
         npm run build
