@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -19,18 +19,21 @@ interface HeaderProps {
 }
 
 function Header({ user }: HeaderProps) {
-
-  const [username, setUsername] = useState('')
-  useEffect(() => {
-    const token = localStorage.getItem('re4cto-token');
-    const decodedToken = token ? jwtDecode<DecodedTokenTypes>(token) : null;
-    if (decodedToken) {
-      setUsername(decodedToken.username);
-    } else if(user) {
-      setUsername(user.username)
-    } else {
-      setUsername('')
+  const username = useMemo(() => {
+    if (user && user.username) {
+      return user.username;
     }
+  
+    const token = localStorage.getItem('re4cto-token');
+    if (token) {
+      try {
+        const decodedToken = jwtDecode<DecodedTokenTypes>(token);
+        return decodedToken.username;
+      } catch (error) {
+        console.error('Failed to decode token:', error);
+      }
+    }
+    return 'N/A';
   }, [user]);
 
   return (

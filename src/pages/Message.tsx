@@ -150,7 +150,7 @@ function Message() {
                         size="sm"
                         onClick={modalShow}
                       >
-                        New Message
+                        Create
                       </ActionButton>
                     </Col>
                   </Row>
@@ -181,7 +181,6 @@ function Message() {
             activeDeleted={activeDeleted}
             selectedFriend={selectedFriend}
             onNewMessage={handleNewMessage}
-            isMobileDetail={isMobileDetail}
             toggleList={handleToggleList}
           />
         </Col>

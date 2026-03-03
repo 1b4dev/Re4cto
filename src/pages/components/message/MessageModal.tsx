@@ -90,7 +90,7 @@ function MessageModal({ show, handleClose, handleActive, handleClick, handleDele
   return (
     <Modal show={show} onHide={handleClose} backdrop="static" contentClassName="rounded-4 border" tabIndex="-1" aria-labelledby="newMessage" aria-hidden="true" centered>
       <Modal.Header closeButton>
-        <h3 className="modal-title" id="messageModalLabel">New message</h3>
+        <h3 className="modal-title" id="messageModalLabel">New Message</h3>
       </Modal.Header>
       <Modal.Body>
         <div className="border-bottom pb-2">

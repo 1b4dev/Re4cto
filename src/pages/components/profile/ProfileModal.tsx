@@ -34,20 +34,26 @@ interface ProfileModalProps {
 }
 
 function ProfileModal({ show, onHide, user, updateUser }: ProfileModalProps) {
-  const [formData, setFormData] = useState<Partial<UserTypes>>(initialFormDataState);
+  const [prevUser, setPrevUser] = useState<UserTypes | null>(user);
   const [alert, setAlert] = useState<AlertTypes>(initialAlertState);
   const timeoutRef = useRef<number | null>(null);
+  const [formData, setFormData] = useState<Partial<UserTypes>>(() => 
+    user ? { name: user.name, username: user.username, email: user.email } : initialFormDataState
+  );
   const { fetchData, loading } = useApi();
 
-  useEffect(() => {
+  if (user !== prevUser) {
+    setPrevUser(user);
     if (user) {
       setFormData({
         name: user.name,
         username: user.username,
         email: user.email
       });
+    } else {
+      setFormData(initialFormDataState);
     }
-  }, [user]);
+  }
 
   useEffect(() => {
     const controller = new AbortController();

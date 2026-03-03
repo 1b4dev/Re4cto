@@ -40,6 +40,7 @@ function MessageGroup({ group, id }: MessageGroupProps){
               <MessageActions
                 text={message.text}
                 textId={message.text_id}
+                textTimestamp={message.sent_at}
                 isSender={isSender}
               />
             </div>

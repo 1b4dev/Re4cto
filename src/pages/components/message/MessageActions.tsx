@@ -3,15 +3,17 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import Overlay from 'react-bootstrap/Overlay';
 import Tooltip from 'react-bootstrap/Tooltip';
 import ConfirmModal from '../ConfirmModal';
+import dayjs from '../TimeConfig'
 import useApi from '../hooks/useApi';
 
 interface MessageActionsProps {
   text: string;
   textId: string;
+  textTimestamp: string;
   isSender: boolean;
 }
 
-function MessageActions({ text, textId, isSender }: MessageActionsProps){
+function MessageActions({ text, textId, textTimestamp, isSender }: MessageActionsProps){
   const { fetchData } = useApi();
   const [showOverlay, setShowOverlay] = useState(false);
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -71,6 +73,8 @@ function MessageActions({ text, textId, isSender }: MessageActionsProps){
           className="bg-body-tertiary rounded-3 shadow-sm p-2"
           align={isSender ? 'end' : 'start'}
         >
+          <Dropdown.Header>{dayjs.utc(textTimestamp).local().format('ddd, D MMM YYYY, HH:mm ')}</Dropdown.Header>
+          <Dropdown.Divider/>
           <Dropdown.Item
             className="px-2 rounded-2"
             onClick={handleCopy}

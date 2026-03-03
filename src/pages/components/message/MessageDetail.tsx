@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
 import dayjs from '../TimeConfig';
@@ -55,13 +54,11 @@ interface MessageDetailProps {
   activeDeleted: number | null;
   selectedFriend: SelectedFriendTypes | null;
   onNewMessage: (newMessage: ActiveMessageTypes) => void;
-  isMobileDetail: boolean;
   toggleList: () => void;
 }
   
 
-function MessageDetail({ activeMessage, activeDeleted, selectedFriend, onNewMessage, isMobileDetail, toggleList }: MessageDetailProps) {
-  const [messages, setMessages] = useState<MessageTypes[]>([]);
+function MessageDetail({ activeMessage, activeDeleted, selectedFriend, onNewMessage, toggleList }: MessageDetailProps) {
   const [chat, setChat] = useState('');
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const messagesLengthRef = useRef<number>(0);
@@ -75,16 +72,27 @@ function MessageDetail({ activeMessage, activeDeleted, selectedFriend, onNewMess
   const sseEndpoint = activeMessage?.message_id ? `messages/active/stream/${activeMessage.message_id}` : null;
   const { data: sseData } = useSSE<ActiveSSETypes>(sseEndpoint);
 
-  useEffect(() => {
-    if (sseData?.active_message) {
+  const messages = useMemo<MessageTypes[]>(() => {
+    if (!activeMessage) return[];
+    if (sseData?.active_message && sseData.active_message.message_id === activeMessage.message_id) {
       try {
         const parsedContent = JSON.parse(sseData.active_message.content);
-        setMessages(parsedContent.messages);
+        return parsedContent.messages ||[];
       } catch (error) {
         console.error('Error parsing SSE data: ', error);
       }
     }
-  }, [sseData]);
+
+    if (activeMessage.content) {
+      try {
+        const parsedContent = JSON.parse(activeMessage.content);
+        return parsedContent.messages ||[];
+      } catch (error) {
+        console.error('Error parsing activeMessage content: ', error);
+      }
+    }
+    return [];
+  }, [sseData, activeMessage]);
 
   const adjustTextarea = useCallback (() => {
     if (textareaRef.current) {
@@ -104,13 +112,6 @@ function MessageDetail({ activeMessage, activeDeleted, selectedFriend, onNewMess
     setChat(e.target.value);
     adjustTextarea();
   }, [adjustTextarea]);
-
-  useEffect(() => {
-    if (activeMessage?.content){
-      const parsedContent = JSON.parse(activeMessage.content);
-      setMessages(parsedContent.messages);
-    }
-  }, [activeMessage]);
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -177,31 +178,30 @@ function MessageDetail({ activeMessage, activeDeleted, selectedFriend, onNewMess
     <Card className="rounded-4" style={{height : '605px'}}>
       <Card.Header className="rounded-top-4">
         <Row className="align-items-center justify-content-between">
-          {isMobileDetail && (
-            <Col xs={2} className="d-inline-flex">
+          <div className="hstack gap-3">
+            <h3 className={`${(isNewChat || !activeMessage?.sender_username) ? 'text-muted my-3' : 'h5 mt-2 mb-1'}`}>
+              {isNewChat
+                ? `New Chat w/${selectedFriend.name}` : activeMessage?.sender_username 
+                ? (
+
+                  <div className="vstack gap-1"> 
+                    {activeMessage.sender_name}
+                    <span className="fs-6 fw-normal mb-1 text-muted">@{activeMessage.sender_username}</span>
+                  </div>
+                ) : `No message selected`
+              }    
+            </h3>
+            {(activeMessage?.sender_username ?? isNewChat) && (
               <ActionButton
                 variant="secondary"
                 size="sm"
                 onClick={toggleList}
+                classes="ms-auto"
               >
-                {'\u2190'}
+                &times;
               </ActionButton>
-            </Col>
-          )}
-          <Col className={`${isMobileDetail && 'ps-0'}`}>
-            <h3 className={`my-3 ${(isNewChat || !activeMessage?.sender_username) && 'text-muted'}`}>
-              {isNewChat 
-                ? `New Chat w/${selectedFriend.name}` : activeMessage?.sender_username 
-                ? (
-                  <div className="d-flex align-items-end justify-content-between"> 
-                    {activeMessage.sender_name}
-                    <span className="fs-6 fw-normal mb-1 text-muted"> @{activeMessage.sender_username}</span>
-                  </div>
-                )
-                : `No message selected`
-              }
-            </h3>
-          </Col>
+            )}
+          </div>
         </Row>
       </Card.Header>
       <Card.Body className="overflow-auto py-0">
@@ -233,27 +233,25 @@ function MessageDetail({ activeMessage, activeDeleted, selectedFriend, onNewMess
       {(selectedFriend || messages.length > 0) && (
         <Card.Footer className="rounded-bottom-4">
           <Form onSubmit={handleReply} id={String(activeDeleted ? activeDeleted : !activeDeleted && isNewChat ? selectedFriend?.friend_id : activeMessage?.message_id)} method="post">
-            <div className="text-muted d-flex justify-content-start align-items-center my-1">
-              <div className="position-relative w-100">
+              <div className="d-flex flex-column rounded-3 bg-secondary-subtle border p-2">              <div className="position-relative w-100">
                 <Form.Control 
                   as="textarea"
                   ref={textareaRef}
                   maxLength={1000} 
-                  rows={2} 
-                  className="bg-secondary-subtle rounded-3 pb-3" 
-                  style={{paddingRight: '4rem'}}
+                  rows={1} 
+                  className="bg-transparent rounded-0 border-0 flex-grow-1 shadow-none px-1"
                   placeholder="Message…"
                   aria-label="Reply message field"
                   required 
                   value={chat} 
                   onChange={handleChange}
                 />
-                <div className="position-absolute end-0 bottom-0 m-2">
+                <div className="d-flex justify-content-between align-items-center pt-1">                  
                   <ActionButton
                     size="sm"
                     variant="secondary"
                     type="submit"
-                    classes="px-2"
+                    classes="ms-auto"
                   >
                     Send
                   </ActionButton>

@@ -9,6 +9,11 @@ function usePoll(callback: CallbackFunction, interval: number = 10000, dependenc
   const intervalRef = useRef<number | null>(null);
   const controllerRef = useRef<AbortController | null>(null);
   const pollIDRef = useRef<number>(0);
+  const callbackRef = useRef<CallbackFunction>(callback);
+
+  useEffect(() => {
+    callbackRef.current = callback;
+  });
 
   useEffect(() => {
     pollIDRef.current = pollCounter++;
@@ -24,12 +29,17 @@ function usePoll(callback: CallbackFunction, interval: number = 10000, dependenc
       controllerRef.current = null;
     }
     activeRef.current = false;
-  }, [])
+  }, []);
+
+  const hasDependencies = dependencies.some(
+    (dep) => dep !== undefined && dep !== null
+  );
+  const depsKey = JSON.stringify(dependencies);
 
   useEffect(() => {
     pollCleanup();
 
-    if(!dependencies.some(dep => dep !== undefined && dep !== null)) {
+    if (!hasDependencies) {
       return;
     }
 
@@ -40,17 +50,19 @@ function usePoll(callback: CallbackFunction, interval: number = 10000, dependenc
     const executePoll = async () => {
       if (!activeRef.current) return;
       try {
-        await callback(controller.signal);
+        await callbackRef.current(controller.signal);
       } catch (error) {
         console.error(error);
       }
-    }
+    };
+
     executePoll();
     intervalRef.current = setInterval(executePoll, interval);
+
     return () => {
       pollCleanup();
     };
-  }, [pollCleanup, callback, interval, ...dependencies]);
+  }, [pollCleanup, interval, hasDependencies, depsKey]);
 }
 
 export default usePoll;

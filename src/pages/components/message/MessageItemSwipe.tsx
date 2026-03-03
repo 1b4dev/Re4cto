@@ -12,14 +12,14 @@ function SwipeableListItem({ children, onClick, onDelete, showHint = true }: Swi
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const startXRef = useRef<number>(0);
   const currentXRef = useRef<number>(0);
-  const deleteThreshold = -75;
+  const deleteThreshold = -65;
 
   useEffect(() => {
     const hasSeenHint = localStorage.getItem('re4cto-swipe-seen');
     
     if (showHint && !hasSeenHint) {
       setTimeout(() => {
-        setTranslation(-60);
+        setTranslation(-70);
         setTimeout(() => {
           setTranslation(0);
           localStorage.setItem('re4cto-swipe-seen', 'true');
@@ -36,12 +36,12 @@ function SwipeableListItem({ children, onClick, onDelete, showHint = true }: Swi
   const handleTouchMove = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
     const diff = e.touches[0].clientX - currentXRef.current;
     currentXRef.current = e.touches[0].clientX;
-    const newTranslation = Math.min(0, Math.max(-80, translation + diff));
+    const newTranslation = Math.min(0, Math.max(-70, translation + diff));
     setTranslation(newTranslation);
   }, [translation]);
 
   const handleTouchEnd = useCallback(() => {
-    setTranslation(translation < deleteThreshold ? -80 : 0);
+    setTranslation(translation < deleteThreshold ? -70 : 0);
   }, [translation, deleteThreshold]);
 
   const handleMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
@@ -55,14 +55,14 @@ function SwipeableListItem({ children, onClick, onDelete, showHint = true }: Swi
     if (!isDragging) return;
     const diff = e.clientX - currentXRef.current;
     currentXRef.current = e.clientX;
-    const newTranslation = Math.min(0, Math.max(-80, translation + diff));
+    const newTranslation = Math.min(0, Math.max(-70, translation + diff));
     setTranslation(newTranslation);
   }, [isDragging, translation]);
 
   const handleMouseUp = useCallback(() => {
     if (!isDragging) return;
     setIsDragging(false);
-    setTranslation(translation < deleteThreshold ? -80 : 0);
+    setTranslation(translation < deleteThreshold ? -70 : 0);
   }, [isDragging, translation, deleteThreshold]);
 
   useEffect(() => {
@@ -71,12 +71,12 @@ function SwipeableListItem({ children, onClick, onDelete, showHint = true }: Swi
     const handleGlobalMouseMove = (e: MouseEvent) => {
       const diff = e.clientX - currentXRef.current;
       currentXRef.current = e.clientX;
-      setTranslation(prev => Math.min(0, Math.max(-80, prev + diff)));
+      setTranslation(prev => Math.min(0, Math.max(-70, prev + diff)));
     };
 
     const handleGlobalMouseUp = () => {
       setIsDragging(false);
-      setTranslation(prev => prev < deleteThreshold ? -80 : 0);
+      setTranslation(prev => prev < deleteThreshold ? -70 : 0);
     };
 
     document.addEventListener('mousemove', handleGlobalMouseMove);

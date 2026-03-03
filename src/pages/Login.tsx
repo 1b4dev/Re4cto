@@ -124,45 +124,47 @@ function Login() {
   }, [fetchData, loginData, redirect, showAlert, setLoginError, navigate])
 
   return (
-    <Container className="position-absolute top-50 start-50 translate-middle">
-      <Row className="d-flex justify-content-center align-items-center">
-        <Col xs={10} sm={8} md={6} lg={5} xl={4} xxl={3}>
-          <Form className="w-100 text-center" onSubmit={handleLogin}>
-            <img className="mb-2" src={logo} alt="Re4cto Client Logo" width="72" height="72"/>
-            <h1 className="h3 mb-4 fw-normal">Please sign in</h1>
-            <AlertProvider alert={alert} onClose={hideAlert} />
-            {formFields.map(field => (
-              <FormField
-                key={field.id}
-                field={field}
-                value={loginData[field.id]}
-                onChange={handleChange}
-                isInvalid={loginError}
-              />
-            ))}
-            <Form.Group className="text-start ms-2 my-3">
-              <Form.Check
-                type="switch"
-                id="remember"
-                name="remember"
-                label="Remember me"
-                checked={loginData.remember}
-                onChange={handleChange}
-              />
-            </Form.Group>  
-            <ActionButton
-              type="submit"
-              classes="w-100 py-2"
-              disabled={loading}
-              isLoading={loading}
-            >
-              Sign in
-            </ActionButton>
-            <p className="mt-5 mb-3 text-body-secondary">©{new Date().getFullYear()} Re4cto Client v{version} | Created by <a href="https://1b4.dev" target="_blank" rel="noopener noreferrer">1B4dev</a></p>
-          </Form>
-        </Col>
-      </Row>
-    </Container> 
+    <section className="d-flex justify-content-center align-items-center" style={{ minHeight: '100dvh' }}>
+      <Container className="my-3">
+        <Row className="d-flex justify-content-center align-items-center">
+          <Col xs={10} sm={8} md={6} lg={5} xl={4} xxl={3}>
+            <Form className="w-100 text-center" onSubmit={handleLogin}>
+              <img className="mb-2" src={logo} alt="Re4cto Client Logo" width="72" height="72"/>
+              <h1 className="h3 mb-4 fw-normal">Please sign in</h1>
+              <AlertProvider alert={alert} onClose={hideAlert} />
+              {formFields.map(field => (
+                <FormField
+                  key={field.id}
+                  field={field}
+                  value={loginData[field.id]}
+                  onChange={handleChange}
+                  isInvalid={loginError}
+                />
+              ))}
+              <Form.Group className="text-start ms-2 my-3">
+                <Form.Check
+                  type="switch"
+                  id="remember"
+                  name="remember"
+                  label="Remember me"
+                  checked={loginData.remember}
+                  onChange={handleChange}
+                />
+              </Form.Group>  
+              <ActionButton
+                type="submit"
+                classes="w-100 py-2"
+                disabled={loading}
+                isLoading={loading}
+              >
+                Sign in
+              </ActionButton>
+              <p className="mt-5 mb-3 text-body-secondary">©{new Date().getFullYear()} Re4cto Client v{version} | Created by <a href="https://1b4.dev" target="_blank" rel="noopener noreferrer">1B4dev</a></p>
+            </Form>
+          </Col>
+        </Row>
+      </Container>
+    </section>
   );
 };
 

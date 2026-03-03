@@ -70,11 +70,12 @@ function MessageList({ messageList, loading, handleClick, handleActive, active, 
           {loading ? (
             <ListPlaceholder />
           ) : messageList.length > 0 ? (
-            messageList.map((list) => (
+            messageList.map((list, index) => (
               <ListGroup.Item key={list.message_id} className="px-0">
                 <SwipeableListItem
                   onDelete={() => openConfirmModal(list.message_id)}
-                  onClick={() => {handleItemClick(list.message_id)}} 
+                  onClick={() => {handleItemClick(list.message_id)}}
+                  showHint={index === 0}
                 >
                   <a
                     onClick={() => {handleItemClick(list.message_id)}} 
